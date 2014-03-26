@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.area {
+  fill: steelblue;
+  opacity:.4;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.js"></script>
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 1200 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height/2,0]);
+
+var area = d3.svg.area()
+    .x(function(d,i) { return x(i); })
+    .y0(height)
+    .y1(function(d) { return y(d.b1); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.csv("Activity_Balance.csv", function(error, data) {
+console.log("data");
+console.log(data.length);
+console.log(data[0]); //the first hour of data
+  data.forEach(function(d,i) {
+  	// for (i = 0; i<670; i++){
+  		// console.log(d["b"+i]);
+  		d.bey = +d["b"+i];
+  		console.log(d.bey);
+  		console.log(i);
+  	// }
+    // d.b1 = +d.b1;
+  });
+  // svg.append("path")
+  //     .datum(data)
+  //     .attr("class", "area")
+  //     .attr("d", area);
+
+svg.selectAll("rect")
+	.data(function(d){ return data; })
+	.enter()
+	.append("rect")
+	.attr("x", function(d,i){ return i })
+	.attr("y", height/2)
+	.attr("height", function(d){ 
+		return d.bey;
+// console.log(d.bey);
+
+	})
+	.attr("width", 10)
+	.attr("fill", "black")
+})
+</script>
+</body>
