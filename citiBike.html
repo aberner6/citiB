@@ -30,7 +30,7 @@ body {
         /*stroke: #ccc;*/
       }
       
-      .line {stroke: red; stroke-width: 2;fill: transparent;}
+      .line {stroke: lightgray; stroke-width: 1;fill: transparent;}
       
       .line1 {stroke: yellow; stroke-width: 2;fill: transparent;}
       
@@ -74,25 +74,7 @@ d3.csv("Activity_Balance3.csv", function(error, data) {
     // d.date = parseDate(d.date);
     d.close = +d.b9;
   });
-  // var lineData = [ { "x": 0,   "y": 5},  { "x": 20,  "y": 20},
-  //                { "x": 40,  "y": 10}, { "x": 60,  "y": 40},
-  //                 { "x": 80,  "y": 5},  { "x": 200, "y": 30}];
-                  
-  //                 var p = [ { "x": 1,   "y": 0},  { "x": 20,  "y": 20},
-  //                { "x": 40,  "y": 10},
-  //                 { "x": 60,  "y": 40},
-  //                 { "x": 80,  "y": 5},
-  //                   { "x": 90,  "y": 50},
-  //                   { "x": 96,  "y": 10},
-  //                    { "x": 102,  "y": 19},
-  //                     { "x": 109,  "y": 13},
-  //                      { "x": 119,  "y": 19},
-  //                   { "x": 132,  "y": 30}, 
-  //                  { "x": 143, "y": 41},
-  //                  { "x": 149, "y": 29},
-  //                  { "x": 200, "y": 80}
-                  
-  //                ]
+
 
 //Do some basic setup - set margins and widths for the entire graph     
 var margin = {top: 20, right: 30, bottom: 30, left: 40},
@@ -104,7 +86,6 @@ var margin = {top: 20, right: 30, bottom: 30, left: 40},
 //Define Scale
 var x = d3.scale.linear()
     .range([0, width]);
-    
    
 
 var y = d3.scale.linear()
@@ -120,20 +101,34 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
     
-    
-    
 
 
+
+    var whichStation = 0;
     //Define a line data accessor function
     var line = d3.svg.line()
     .x(function(d,i) { return x(i); })
-    .y(function(d) { return y(d.b9); }).interpolate('cardinal');
+    .y(function(d) { 
+        // for (i=0;i<670; i++){
+        return y(d["b"+whichStation]); 
+        }).interpolate('cardinal');
+
+
+        // for (i=0;i<670; i++){
+        // return y(d["b"+i]); 
+        // }}).interpolate('cardinal');
     
     //define an area accessor function - used to draw the areas under the line
     var area = d3.svg.area()
     .x(function(d,i) { return x(i); })
     .y0(height)
-    .y1(function(d) { return y(d.b9); }).interpolate('cardinal');
+    .y1(function(d) { 
+        return y(d["b"+whichStation]); 
+      })
+        // for (i=0;i<670; i++){
+        // return y(d["b"+i]); 
+        // }})
+    .interpolate('cardinal');
     
    var svg = d3.select("body").append("svg")
    .attr("class",'container')
@@ -146,7 +141,7 @@ var yAxis = d3.svg.axis()
     
    // d3.json("data.json", function(json) {
     
-      x.domain([0,d3.max(data, function(d,i) { return i; })]);
+      x.domain([0,1+d3.max(data, function(d,i) { return i; })]);
        y.domain([0,d3.max(data, function(d) { return d.b9; })]);
        
        svg.append("g")
@@ -162,9 +157,37 @@ var yAxis = d3.svg.axis()
       .datum(data)
       .attr("class", "line")
       .attr("d", line);
-      
+   
+      console.log(data[0])  //shows hour per hour
+
+
+var circle = svg.selectAll("circle")
+.data(function(d){
+  return data;
+})
+.enter().append("circle")
+.attr("cx", function(d,i){
+  return x(i);
+})
+.attr("cy", function(d){     
+ // console.log(d["b0"])  //shows all the stations etc.
+        return y(d["b"+whichStation]);  //whichStation
+   // for (i=0;i<670; i++){
+   //      return y(d["b"+i]); 
+   //  }
+})
+.attr("r", 1.5);
+
+
+
+
+
+
+
+
+
       // svg.append("path")
-      // .datum(data)
+      // .datum(data[1])
       // .attr("class", "line1")
       // .attr("d", line);
       
