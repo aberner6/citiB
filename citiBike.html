@@ -6,75 +6,203 @@ body {
   font: 10px sans-serif;
 }
 
-.axis path,
+/*.axis path,
 .axis line {
-  fill: none;
-  stroke: #000;
+  /*fill: none;*/
+/*  stroke: #000;
   shape-rendering: crispEdges;
 }
 
 .area {
   fill: steelblue;
   opacity:.4;
+}*/
+  .axis path,
+      .axis line {
+        fill: none;
+        stroke: #999;
+        shape-rendering: crispEdges;
+      }
+      
+       text {
+        font-family: sans-serif;
+        font-size: 10px;
+        /*stroke: #ccc;*/
+      }
+      
+      .line {stroke: red; stroke-width: 2;fill: transparent;}
+      
+      .line1 {stroke: yellow; stroke-width: 2;fill: transparent;}
+      
+      .container {background: white;}
+      
+      .area {
+    fill: lightgray;
+    stroke-width: 0;
+    opacity: 0.5
 }
+.area1 {
+    fill: lightgray;
+    opacity: 0.1;
+    stroke-width: 0;
+}
+
 
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.js"></script>
 <script>
 
-var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 1200 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+// var margin = {top: 20, right: 20, bottom: 30, left: 50},
+//     width = 1200 - margin.left - margin.right,
+//     height = 500 - margin.top - margin.bottom;
 
+// var x = d3.scale.linear()
+//     .range([0, width]);
+
+// var y = d3.scale.linear()
+//     .range([height/2,0]);
+
+// var svg = d3.select("body").append("svg")
+//     .attr("width", width + margin.left + margin.right)
+//     .attr("height", height + margin.top + margin.bottom)
+//   .append("g")
+//     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.csv("Activity_Balance3.csv", function(error, data) {
+  data.forEach(function(d) {
+    // d.date = parseDate(d.date);
+    d.close = +d.b9;
+  });
+  // var lineData = [ { "x": 0,   "y": 5},  { "x": 20,  "y": 20},
+  //                { "x": 40,  "y": 10}, { "x": 60,  "y": 40},
+  //                 { "x": 80,  "y": 5},  { "x": 200, "y": 30}];
+                  
+  //                 var p = [ { "x": 1,   "y": 0},  { "x": 20,  "y": 20},
+  //                { "x": 40,  "y": 10},
+  //                 { "x": 60,  "y": 40},
+  //                 { "x": 80,  "y": 5},
+  //                   { "x": 90,  "y": 50},
+  //                   { "x": 96,  "y": 10},
+  //                    { "x": 102,  "y": 19},
+  //                     { "x": 109,  "y": 13},
+  //                      { "x": 119,  "y": 19},
+  //                   { "x": 132,  "y": 30}, 
+  //                  { "x": 143, "y": 41},
+  //                  { "x": 149, "y": 29},
+  //                  { "x": 200, "y": 80}
+                  
+  //                ]
+
+//Do some basic setup - set margins and widths for the entire graph     
+var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    width = 1400 - margin.left - margin.right,
+    height = 550 - margin.top - margin.bottom;
+
+
+
+//Define Scale
 var x = d3.scale.linear()
     .range([0, width]);
+    
+   
 
 var y = d3.scale.linear()
-    .range([height/2,0]);
+    .range([height, 0]);
 
-var area = d3.svg.area()
+//Define an x Axis
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+//Define an y axis
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+    
+    
+    
+
+
+    //Define a line data accessor function
+    var line = d3.svg.line()
+    .x(function(d,i) { return x(i); })
+    .y(function(d) { return y(d.b9); }).interpolate('cardinal');
+    
+    //define an area accessor function - used to draw the areas under the line
+    var area = d3.svg.area()
     .x(function(d,i) { return x(i); })
     .y0(height)
-    .y1(function(d) { return y(d.b1); });
-
-var svg = d3.select("body").append("svg")
+    .y1(function(d) { return y(d.b9); }).interpolate('cardinal');
+    
+   var svg = d3.select("body").append("svg")
+   .attr("class",'container')
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + margin.bottom*8)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-d3.csv("Activity_Balance.csv", function(error, data) {
-console.log("data");
-console.log(data.length);
-console.log(data[0]); //the first hour of data
-  data.forEach(function(d,i) {
-  	// for (i = 0; i<670; i++){
-  		// console.log(d["b"+i]);
-  		d.bey = +d["b"+i];
-  		console.log(d.bey);
-  		console.log(i);
-  	// }
-    // d.b1 = +d.b1;
-  });
-  // svg.append("path")
-  //     .datum(data)
-  //     .attr("class", "area")
-  //     .attr("d", area);
-
-svg.selectAll("rect")
-	.data(function(d){ return data; })
-	.enter()
-	.append("rect")
-	.attr("x", function(d,i){ return i })
-	.attr("y", height/2)
-	.attr("height", function(d){ 
-		return d.bey;
-// console.log(d.bey);
-
-	})
-	.attr("width", 10)
-	.attr("fill", "black")
+    
+    
+    
+   // d3.json("data.json", function(json) {
+    
+      x.domain([0,d3.max(data, function(d,i) { return i; })]);
+       y.domain([0,d3.max(data, function(d) { return d.b9; })]);
+       
+       svg.append("g")
+      .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+      
+       svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+      
+       svg.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line);
+      
+      // svg.append("path")
+      // .datum(data)
+      // .attr("class", "line1")
+      // .attr("d", line);
+      
+      svg.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", area);
+        
+        // svg.append("path")
+        // .datum(data)
+        // .attr("class", "area1")
+        // .attr("d", area);
+    
+   // })
+    
+    
+    //http://bl.ocks.org/mbostock/3902569#index.html
+// svg.selectAll("line")
+// 	.data(function(d){ return data; })
+// 	.enter()
+// 	.append("line")
+//   .attr("x1", function(d,i){ return i*10 })
+// 	.attr("x2", function(d,i){ return i*10  })
+// 	.attr("y1", height/2)
+// 	.attr("y2", function(d,i){ 
+//     for (i=0;i<670; i+=24){
+//     if (d["b"+i]<0){
+//       return height/2+(d["b"+i]*d["b"+i])*10;
+//     }
+//     if (d["b"+i]>0){
+//     return height/2-(d["b"+i]*d["b"+i])*10;
+//     }
+//     else if (d["b"+i]==0){
+//       return height/2+.4;
+//     }
+//     }
+// 	})
+//   .attr("stroke", "black")
 })
 </script>
 </body>
