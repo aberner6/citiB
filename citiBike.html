@@ -114,6 +114,14 @@ var yAxis = d3.svg.axis()
         }).interpolate('cardinal');
 
 
+    var line1 = d3.svg.line()
+    .x(function(d,i) { return x(i); })
+    .y(function(d) { 
+        // for (i=0;i<670; i++){
+        return y(data[0]); 
+        }).interpolate('cardinal');
+
+
         // for (i=0;i<670; i++){
         // return y(d["b"+i]); 
         // }}).interpolate('cardinal');
@@ -121,9 +129,9 @@ var yAxis = d3.svg.axis()
     //define an area accessor function - used to draw the areas under the line
     var area = d3.svg.area()
     .x(function(d,i) { return x(i); })
-    .y0(height)
+    .y0(height/2)
     .y1(function(d) { 
-        return y(d["b"+whichStation]); 
+        return height/2+y(d["b"+whichStation]); 
       })
         // for (i=0;i<670; i++){
         // return y(d["b"+i]); 
@@ -142,11 +150,11 @@ var yAxis = d3.svg.axis()
    // d3.json("data.json", function(json) {
     
       x.domain([0,1+d3.max(data, function(d,i) { return i; })]);
-       y.domain([0,d3.max(data, function(d) { return d.b9; })]);
+       y.domain([-7,d3.max(data, function(d) { return d.b9; })]);
        
        svg.append("g")
       .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
+    .attr("transform", "translate(0," + height/2 + ")")
       .call(xAxis);
       
        svg.append("g")
@@ -169,32 +177,31 @@ var circle = svg.selectAll("circle")
 .attr("cx", function(d,i){
   return x(i);
 })
-.attr("cy", function(d){     
- // console.log(d["b0"])  //shows all the stations etc.
-        return y(d["b"+whichStation]);  //whichStation
+.attr("cy", function(d,i){   
+var uh = "b12";  
+ console.log(data[0][uh])  //shows all the stations etc.
+    // for (i=0;i<670; i++){
+        return y(data[i]["b"+i]);  //should show every hour, for all stations?
+
+
+        // return y(d["b"+whichStation]);  //whichStation
+
+
    // for (i=0;i<670; i++){
    //      return y(d["b"+i]); 
    //  }
 })
 .attr("r", 1.5);
 
-
-
-
-
-
-
-
-
       // svg.append("path")
-      // .datum(data[1])
+      // .datum(data)
       // .attr("class", "line1")
-      // .attr("d", line);
+      // .attr("d", line1);
       
-      svg.append("path")
-        .datum(data)
-        .attr("class", "area")
-        .attr("d", area);
+      // svg.append("path")
+      //   .datum(data)
+      //   .attr("class", "area")
+      //   .attr("d", area);
         
         // svg.append("path")
         // .datum(data)
@@ -205,6 +212,43 @@ var circle = svg.selectAll("circle")
     
     
     //http://bl.ocks.org/mbostock/3902569#index.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // svg.selectAll("line")
 // 	.data(function(d){ return data; })
 // 	.enter()
